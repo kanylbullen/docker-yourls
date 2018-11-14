@@ -1,10 +1,10 @@
-version: '3'
+version: '3.1'
 
 services:
    db:
      container_name: ${CONTAINER_DB_NAME}
-     image: mariadb:latest
-     restart: unless-stopped
+     image: mysql:5.7
+     restart: always
      volumes:
         - ${DB_PATH}:/var/lib/mysql
      environment:
@@ -13,21 +13,22 @@ services:
        MYSQL_USER: ${MYSQL_USER}
        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 
-   wordpress:
+   yourls:
      depends_on:
        - db
      container_name: ${CONTAINER_YOURLS_NAME}
-     image: yourls:fpm-alpine
-     restart: unless-stopped
+     image: yourls
+     restart: always
+     volumes:
+       - ${YOURLS_PATH}:/var/www/html
      environment:
        YOURLS_DB_HOST: ${CONTAINER_DB_NAME}:3306
        YOURLS_DB_NAME: ${MYSQL_DATABASE}
        YOURLS_DB_USER: ${MYSQL_USER}
        YOURLS_DB_PASS: ${MYSQL_PASSWORD}
-       YOURLS_TABLE_PREFIX: ${YOURLS_TABLE_PREFIX}
        YOURLS_SITE: ${YOURLS_SITE}
-       VIRTUAL_HOST: ${YOURLS_SITE}
-       LETSENCRYPT_HOST: ${YOURLS_SITE}
+       VIRTUAL_HOST: ${DOMAIN}
+       LETSENCRYPT_HOST: ${DOMAIN}
        LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL} 
 
 networks:
